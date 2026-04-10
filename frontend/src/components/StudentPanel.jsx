@@ -108,7 +108,15 @@ const StudentPanel = ({ students, onAddStudent, onUpdateStudent, onDeleteStudent
             ) : (
               students.map((student) => (
                 <tr key={student._id}>
-                  <td>{student.name}</td>
+                  <td>
+                    <div className="student-identity">
+                      <span className="student-avatar">{student.name?.charAt(0)?.toUpperCase() || "S"}</span>
+                      <div>
+                        <strong>{student.name}</strong>
+                        <small>Roll profile</small>
+                      </div>
+                    </div>
+                  </td>
                   <td>{student.className}</td>
                   <td>{student.section || "-"}</td>
                   <td>

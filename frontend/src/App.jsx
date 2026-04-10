@@ -6,6 +6,7 @@ import TaskPanel from "./components/TaskPanel";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem("user");
     return raw ? JSON.parse(raw) : null;
@@ -16,6 +17,16 @@ const App = () => {
   const [error, setError] = useState("");
   const completedTasks = tasks.filter((task) => task.isCompleted).length;
   const pendingTasks = tasks.length - completedTasks;
+  const currentHour = new Date().getHours();
+  const greeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
+  const displayName = user?.email
+    ? user.email
+        .split("@")[0]
+        .split(/[._-]/)
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ")
+    : "Admin";
 
   const isLoggedIn = Boolean(token);
 
@@ -42,6 +53,12 @@ const App = () => {
     });
   }, [token]);
 
+  useEffect(() => {
+    document.body.classList.remove("theme-dark", "theme-light");
+    document.body.classList.add(`theme-${theme}`);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
   const login = async (credentials) => {
     try {
       setLoading(true);
@@ -65,6 +82,10 @@ const App = () => {
     localStorage.removeItem("user");
     setToken("");
     setUser(null);
+  };
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   const addStudent = async (payload) => {
@@ -130,31 +151,37 @@ const App = () => {
     <main className="page">
       <header className="card dashboard-header">
         <div className="header-copy">
-          <h1>School Management Dashboard</h1>
-          <p className="subtitle">Welcome, {user?.email}</p>
+          <p className="eyebrow">Daily School Desk</p>
+          <h1>{greeting}, {displayName}</h1>
+          <p className="subtitle">Keep student records and assignments organized in one place.</p>
         </div>
 
-        <button type="button" className="ghost" onClick={logout}>
-          Logout
-        </button>
+        <div className="action-row">
+          <button type="button" className="ghost" onClick={toggleTheme}>
+            Switch to {theme === "dark" ? "Light" : "Dark"} Mode
+          </button>
+          <button type="button" className="ghost" onClick={logout}>
+            Logout
+          </button>
+        </div>
       </header>
 
       {error && <p className="error-text card">{error}</p>}
 
       <section className="stats-grid">
-        <article className="card stat-card">
+        <article className="card stat-card students">
           <p>Total Students</p>
           <strong>{students.length}</strong>
         </article>
-        <article className="card stat-card">
+        <article className="card stat-card tasks">
           <p>Total Tasks</p>
           <strong>{tasks.length}</strong>
         </article>
-        <article className="card stat-card">
+        <article className="card stat-card done">
           <p>Completed Tasks</p>
           <strong>{completedTasks}</strong>
         </article>
-        <article className="card stat-card">
+        <article className="card stat-card pending">
           <p>Pending Tasks</p>
           <strong>{pendingTasks}</strong>
         </article>

@@ -79,6 +79,26 @@ const TaskPanel = ({ tasks, students, onAddTask, onToggleTask }) => {
             <article key={task._id} className={`task-item ${task.isCompleted ? "done" : ""}`}>
               <header>
                 <h3>{task.title}</h3>
+                <span className={`status-chip ${task.isCompleted ? "done" : "pending"}`}>
+                  {task.isCompleted ? "Completed" : "Pending"}
+                </span>
+              </header>
+
+              <p>{task.description || "No description"}</p>
+
+              <div className="task-meta">
+                <small>
+                  Student: {task.student?.name || "Unknown"}
+                </small>
+                <small>
+                  Class: {task.student?.className || "-"}
+                </small>
+                <small>
+                  Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "Not set"}
+                </small>
+              </div>
+
+              <footer>
                 <button
                   type="button"
                   className={task.isCompleted ? "ghost" : "success"}
@@ -86,16 +106,7 @@ const TaskPanel = ({ tasks, students, onAddTask, onToggleTask }) => {
                 >
                   {task.isCompleted ? "Completed" : "Mark Complete"}
                 </button>
-              </header>
-
-              <p>{task.description || "No description"}</p>
-
-              <small>
-                Student: {task.student?.name || "Unknown"} | Class: {task.student?.className || "-"}
-              </small>
-              <small>
-                Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "Not set"}
-              </small>
+              </footer>
             </article>
           ))
         )}
